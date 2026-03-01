@@ -1,0 +1,9 @@
+﻿@model University_Notebank.Models.Note
+
+<h2>Delete Note</h2>
+<p>Are you sure you want to delete: <strong>@Model.Title</strong>?</p>
+
+<form method="post">
+    <button type="submit">Yes, Delete</button>
+    <a href="/Admin">Cancel</a>
+</form>

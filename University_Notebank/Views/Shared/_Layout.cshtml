@@ -1,0 +1,271 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>University NoteBank</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #0d1117;
+            color: #e8eaf0;
+            min-height: 100vh;
+        }
+
+        /* ── Navbar ── */
+        .nb-nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            height: 62px;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            background: rgba(13, 17, 23, 0.85);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            gap: 1rem;
+        }
+
+            /* glow line at top */
+            .nb-nav::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 1px;
+                background: linear-gradient(90deg, transparent, rgba(99,179,237,0.5), rgba(167,139,250,0.5), transparent);
+            }
+
+        /* ── Logo ── */
+        .nb-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .nb-logo-icon {
+            width: 34px;
+            height: 34px;
+            background: linear-gradient(135deg, #4f9de0, #7c6fcd);
+            border-radius: 9px;
+            display: grid;
+            place-items: center;
+            font-size: 1rem;
+            box-shadow: 0 0 12px rgba(79,157,224,0.35);
+            transition: box-shadow 0.2s;
+        }
+
+        .nb-logo:hover .nb-logo-icon {
+            box-shadow: 0 0 20px rgba(79,157,224,0.55);
+        }
+
+        .nb-logo-text {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #e8eaf0;
+            letter-spacing: -0.3px;
+        }
+
+            .nb-logo-text span {
+                color: #63b3ed;
+            }
+
+        /* ── Spacer ── */
+        .nb-spacer {
+            flex: 1;
+        }
+
+        /* ── Nav links group ── */
+        .nb-links {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .nb-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0.42rem 0.9rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #8fa3c8;
+            text-decoration: none;
+            transition: color 0.18s, background 0.18s;
+            white-space: nowrap;
+        }
+
+            .nb-link:hover {
+                color: #e8eaf0;
+                background: rgba(255,255,255,0.06);
+            }
+
+            .nb-link.admin {
+                color: #f6c90e;
+            }
+
+                .nb-link.admin:hover {
+                    background: rgba(246,201,14,0.08);
+                    color: #f6c90e;
+                }
+
+        /* ── Divider ── */
+        .nb-divider {
+            width: 1px;
+            height: 22px;
+            background: rgba(255,255,255,0.1);
+            margin: 0 0.5rem;
+            flex-shrink: 0;
+        }
+
+        /* ── User chip ── */
+        .nb-user {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.3rem 0.75rem 0.3rem 0.4rem;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 50px;
+        }
+
+        .nb-avatar {
+            width: 26px;
+            height: 26px;
+            background: linear-gradient(135deg, #4f9de0, #7c6fcd);
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .nb-username {
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: #c8d4e8;
+        }
+
+        /* ── Logout btn ── */
+        .nb-logout {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 0.38rem 0.85rem;
+            background: rgba(248,113,113,0.1);
+            border: 1px solid rgba(248,113,113,0.2);
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: #f87171;
+            text-decoration: none;
+            transition: all 0.18s;
+            margin-left: 0.25rem;
+        }
+
+            .nb-logout:hover {
+                background: rgba(248,113,113,0.18);
+                border-color: rgba(248,113,113,0.4);
+                color: #fca5a5;
+            }
+
+        /* ── Login btn ── */
+        .nb-login {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0.42rem 1.1rem;
+            background: linear-gradient(135deg, #4f9de0, #7c6fcd);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #fff;
+            text-decoration: none;
+            transition: all 0.18s;
+            box-shadow: 0 2px 10px rgba(79,157,224,0.25);
+        }
+
+            .nb-login:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 18px rgba(79,157,224,0.4);
+            }
+
+        /* ── Main ── */
+        .nb-main {
+            min-height: calc(100vh - 62px);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="nb-nav">
+
+        <!-- Logo -->
+        <a href="/Notes" class="nb-logo">
+            <div class="nb-logo-icon">📚</div>
+            <span class="nb-logo-text">Note<span>Bank</span></span>
+        </a>
+
+        <div class="nb-spacer"></div>
+
+        <div class="nb-links">
+
+            @if (Context.Session.GetString("UserRole") == "Admin")
+            {
+                <a href="/Admin" class="nb-link admin">
+                    <!-- shield icon -->
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+                    Admin Panel
+                </a>
+                <div class="nb-divider"></div>
+            }
+
+            @if (Context.Session.GetInt32("UserId") != null)
+            {
+                <div class="nb-user">
+                    <div class="nb-avatar">
+                        @(Context.Session.GetString("UserName")?[0].ToString().ToUpper() ?? "U")
+                    </div>
+                    <span class="nb-username">@Context.Session.GetString("UserName")</span>
+                </div>
+
+                <a href="/Account/Logout" class="nb-logout">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
+                    Logout
+                </a>
+            }
+            else
+            {
+                <a href="/Account/Login" class="nb-login">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4" /><polyline points="10 17 15 12 10 7" /><line x1="15" y1="12" x2="3" y2="12" /></svg>
+                    Login
+                </a>
+            }
+
+        </div>
+    </nav>
+
+    <main class="nb-main">
+        @RenderBody()
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,416 @@
+﻿@model University_Notebank.Models.NoteFormViewModel
+
+@{
+    ViewData["Title"] = "Edit Note";
+    Layout = "_Layout";
+}
+
+<style>
+    @@import url('https://fonts.googleapis.com/css2?family=Syne:wght@@400;600;700;800&family=DM+Sans:wght@@300;400;500&display=swap');
+
+    :root {
+        --bg-deep: #0d1117;
+        --bg-card: #161b27;
+        --bg-input: #1c2333;
+        --bg-hover: #212840;
+        --border: rgba(255,255,255,0.07);
+        --border-focus: rgba(99,179,237,0.5);
+        --accent-blue: #63b3ed;
+        --accent-gold: #f6c90e;
+        --accent-purple: #a78bfa;
+        --text-primary: #e8eaf0;
+        --text-muted: #6b7694;
+        --danger: #f87171;
+        --success: #34d399;
+        --radius: 14px;
+        --transition: 0.22s cubic-bezier(.4,0,.2,1);
+    }
+
+    .edit-wrapper {
+        font-family: 'DM Sans', sans-serif;
+        width: 100%;
+        min-height: 100vh;
+        padding: 2rem 3rem 4rem;
+        box-sizing: border-box;
+        animation: fadeSlideUp 0.45s ease both;
+    }
+
+    @@keyframes fadeSlideUp {
+        from {
+            opacity: 0;
+            transform: translateY(24px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* ── Header ── */
+    .edit-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2.4rem;
+    }
+
+    .edit-header-icon {
+        width: 46px;
+        height: 46px;
+        background: linear-gradient(135deg, #63b3ed22, #a78bfa22);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        font-size: 1.3rem;
+        flex-shrink: 0;
+    }
+
+    .edit-header h2 {
+        font-family: 'Syne', sans-serif;
+        font-size: 1.65rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin: 0;
+        letter-spacing: -0.5px;
+    }
+
+    .edit-header p {
+        margin: 2px 0 0;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+    }
+
+    /* ── Card ── */
+    .edit-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 2rem 2.2rem;
+        box-shadow: 0 8px 40px rgba(0,0,0,0.35);
+    }
+
+    /* ── Section labels ── */
+    .section-label {
+        font-family: 'Syne', sans-serif;
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin: 1.8rem 0 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .section-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+    /* ── Grid ── */
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+        .form-grid.full {
+            grid-template-columns: 1fr;
+        }
+
+    /* ── Field ── */
+    .field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+        .field label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #8fa3c8;
+            letter-spacing: 0.02em;
+        }
+
+        .field input[type="text"],
+        .field textarea,
+        .field select {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--text-primary);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.92rem;
+            padding: 0.7rem 1rem;
+            outline: none;
+            transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+            width: 100%;
+            box-sizing: border-box;
+            -webkit-appearance: none;
+        }
+
+        .field select {
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7694' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 2.2rem;
+        }
+
+        .field textarea {
+            resize: vertical;
+            min-height: 110px;
+            line-height: 1.6;
+        }
+
+            .field input:focus,
+            .field textarea:focus,
+            .field select:focus {
+                border-color: var(--border-focus);
+                background: var(--bg-hover);
+                box-shadow: 0 0 0 3px rgba(99,179,237,0.08);
+            }
+
+            .field input::placeholder,
+            .field textarea::placeholder {
+                color: var(--text-muted);
+            }
+
+    /* ── File upload zone ── */
+    .upload-zone {
+        background: var(--bg-input);
+        border: 1.5px dashed rgba(99,179,237,0.25);
+        border-radius: var(--radius);
+        padding: 1.4rem;
+        text-align: center;
+        cursor: pointer;
+        transition: border-color var(--transition), background var(--transition);
+        position: relative;
+    }
+
+        .upload-zone:hover {
+            border-color: rgba(99,179,237,0.55);
+            background: var(--bg-hover);
+        }
+
+        .upload-zone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+    .upload-icon {
+        font-size: 1.8rem;
+        margin-bottom: 0.4rem;
+    }
+
+    .upload-zone p {
+        color: var(--text-muted);
+        font-size: 0.82rem;
+        margin: 0;
+    }
+
+    .upload-zone span {
+        color: var(--accent-blue);
+        font-weight: 500;
+    }
+
+    /* ── Actions ── */
+    .form-actions {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 2rem;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
+    .btn-cancel {
+        padding: 0.65rem 1.4rem;
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        color: var(--text-muted);
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.88rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all var(--transition);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+        .btn-cancel:hover {
+            border-color: rgba(255,255,255,0.2);
+            color: var(--text-primary);
+            background: rgba(255,255,255,0.04);
+        }
+
+    .btn-submit {
+        padding: 0.65rem 1.8rem;
+        background: linear-gradient(135deg, #4f9de0, #7c6fcd);
+        border: none;
+        border-radius: 10px;
+        color: #fff;
+        font-family: 'Syne', sans-serif;
+        font-size: 0.9rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        cursor: pointer;
+        transition: all var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        box-shadow: 0 4px 16px rgba(79,157,224,0.25);
+        position: relative;
+        overflow: hidden;
+    }
+
+        .btn-submit::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0);
+            transition: background var(--transition);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 24px rgba(79,157,224,0.38);
+        }
+
+            .btn-submit:hover::after {
+                background: rgba(255,255,255,0.06);
+            }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+    /* ── Divider ── */
+    .divider {
+        height: 1px;
+        background: var(--border);
+        margin: 1.6rem 0 0;
+    }
+
+    /* file name preview */
+    #file-label {
+        font-size: 0.78rem;
+        color: var(--accent-blue);
+        margin-top: 4px;
+        min-height: 1em;
+    }
+
+    @@media (max-width: 600px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .edit-card {
+            padding: 1.4rem 1.2rem;
+        }
+    }
+</style>
+
+<div class="edit-wrapper">
+
+    <div class="edit-header">
+        <div class="edit-header-icon">✏️</div>
+        <div>
+            <h2>Edit Note</h2>
+            <p>Update the details for this academic resource</p>
+        </div>
+    </div>
+
+    <div class="edit-card">
+        <form method="post" enctype="multipart/form-data">
+            @Html.HiddenFor(m => m.Id)
+            @Html.AntiForgeryToken()
+
+            <!-- Basic Info -->
+            <div class="section-label">Basic Info</div>
+
+            <div class="form-grid full">
+                <div class="field">
+                    <label>Title</label>
+                    @Html.TextBoxFor(m => m.Title, new { placeholder = "Enter note title…" })
+                    @Html.ValidationMessageFor(m => m.Title)
+                </div>
+            </div>
+
+            <div class="form-grid full" style="margin-top:1rem">
+                <div class="field">
+                    <label>Description</label>
+                    @Html.TextAreaFor(m => m.Description, new { placeholder = "Briefly describe the content of this note…" })
+                    @Html.ValidationMessageFor(m => m.Description)
+                </div>
+            </div>
+
+            <!-- Classification -->
+            <div class="section-label" style="margin-top:1.6rem">Classification</div>
+
+            <div class="form-grid">
+                <div class="field">
+                    <label>Major</label>
+                    @Html.DropDownListFor(m => m.MajorId, Model.Majors, "— Select Major —")
+                    @Html.ValidationMessageFor(m => m.MajorId)
+                </div>
+                <div class="field">
+                    <label>Term</label>
+                    @Html.DropDownListFor(m => m.TermId, Model.Terms, "— Select Term —")
+                    @Html.ValidationMessageFor(m => m.TermId)
+                </div>
+            </div>
+
+            <!-- Media -->
+            <div class="section-label" style="margin-top:1.6rem">Cover Image</div>
+
+            <div class="upload-zone" onclick="document.getElementById('coverInput').click()">
+                <input type="file" id="coverInput" name="CoverImage" accept="image/*"
+                       onchange="showFileName(this,'file-label')" />
+                <div class="upload-icon">🖼️</div>
+                <p><span>Click to upload</span> or drag & drop</p>
+                <p>PNG, JPG, WEBP — optional replacement</p>
+            </div>
+            <div id="file-label"></div>
+
+            <div class="divider"></div>
+
+            <!-- Actions -->
+            <div class="form-actions">
+                <a href="/Admin/Notes" class="btn-cancel">
+                    ← Cancel
+                </a>
+                <button type="submit" class="btn-submit">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                        <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
+                        <polyline points="17 21 17 13 7 13 7 21" />
+                        <polyline points="7 3 7 8 15 8" />
+                    </svg>
+                    Save Changes
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script>
+    function showFileName(input, labelId) {
+        const label = document.getElementById(labelId);
+        label.textContent = input.files.length
+            ? '📎 ' + input.files[0].name
+            : '';
+    }
+</script>
