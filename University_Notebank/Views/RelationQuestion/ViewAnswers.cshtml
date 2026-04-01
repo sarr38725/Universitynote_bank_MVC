@@ -1,0 +1,243 @@
+@model University_Notebank.Models.RelationQuestion
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Answers – NoteBank</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg:#080f1a; --panel:#0f1d30; --panel2:#122038;
+            --gold:#c9a84c; --gold2:#e8c96a; --gold-dim:rgba(201,168,76,0.1);
+            --border:rgba(201,168,76,0.18); --border2:rgba(255,255,255,0.05);
+            --white:#ffffff; --muted:#6b7a99; --muted2:#8892a4;
+            --input-bg:#0b1828; --sidebar:#0b1525;
+        }
+        body { font-family:'Outfit',sans-serif; background:var(--bg); color:var(--white); display:flex; min-height:100vh; }
+        .sidebar { width:260px; background:var(--sidebar); border-right:1px solid var(--border2); display:flex; flex-direction:column; position:fixed; top:0; left:0; bottom:0; z-index:50; }
+        .sidebar-brand { padding:28px 24px 24px; border-bottom:1px solid var(--border2); display:flex; align-items:center; gap:12px; }
+        .brand-logo { width:40px; height:40px; background:var(--gold); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; }
+        .brand-name { font-family:'Cormorant Garamond',serif; font-size:1.15rem; font-weight:700; }
+        .brand-sub { font-size:0.7rem; color:var(--gold); letter-spacing:1.5px; text-transform:uppercase; }
+        .sidebar-nav { flex:1; padding:24px 16px; display:flex; flex-direction:column; gap:4px; }
+        .nav-label { font-size:0.65rem; color:var(--muted); letter-spacing:2px; text-transform:uppercase; padding:12px 8px 6px; font-weight:600; }
+        .nav-item { display:flex; align-items:center; gap:12px; padding:11px 14px; border-radius:10px; text-decoration:none; color:var(--muted2); font-size:0.88rem; transition:all 0.2s; position:relative; }
+        .nav-item:hover { background:rgba(255,255,255,0.04); color:var(--white); }
+        .nav-item.active { background:var(--gold-dim); color:var(--gold); border:1px solid var(--border); }
+        .nav-item.active::before { content:''; position:absolute; left:0; top:20%; bottom:20%; width:3px; background:var(--gold); border-radius:0 4px 4px 0; }
+        .sidebar-footer { padding:16px; border-top:1px solid var(--border2); }
+        .user-profile { display:flex; align-items:center; gap:10px; padding:12px; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid var(--border2); }
+        .user-avatar { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,var(--gold),var(--gold2)); display:flex; align-items:center; justify-content:center; font-size:16px; }
+        .user-name { font-size:0.82rem; font-weight:600; }
+        .user-role { font-size:0.7rem; color:var(--gold); }
+        .main { margin-left:260px; flex:1; display:flex; flex-direction:column; }
+        .topbar { height:68px; padding:0 36px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border2); background:rgba(8,15,26,0.8); backdrop-filter:blur(12px); position:sticky; top:0; z-index:40; }
+        .breadcrumb { display:flex; align-items:center; gap:8px; font-size:0.82rem; margin-bottom:3px; }
+        .breadcrumb a { color:var(--muted); text-decoration:none; }
+        .breadcrumb a:hover { color:var(--gold); }
+        .breadcrumb .current { color:var(--white); font-weight:500; }
+        .topbar-title { font-family:'Cormorant Garamond',serif; font-size:1.5rem; font-weight:700; }
+        .btn-back { padding:9px 20px; border:1px solid var(--border2); border-radius:9px; color:var(--muted2); font-size:0.85rem; text-decoration:none; transition:all 0.2s; }
+        .btn-back:hover { border-color:var(--border); color:var(--white); }
+        .content { padding:36px; flex:1; max-width:900px; }
+
+        /* QUESTION SUMMARY */
+        .q-summary { background:var(--panel); border:1px solid var(--border2); border-radius:14px; padding:20px 24px; margin-bottom:28px; }
+        .q-summary-title { font-family:'Cormorant Garamond',serif; font-size:1.2rem; font-weight:600; margin-bottom:6px; }
+        .q-summary-meta { font-size:0.78rem; color:var(--muted); display:flex; gap:16px; flex-wrap:wrap; }
+        .q-summary-meta span { color:var(--muted2); }
+
+        /* SECTION */
+        .section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+        .section-title { font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-weight:600; display:flex; align-items:center; gap:10px; }
+        .count-pill { font-family:'Outfit',sans-serif; font-size:0.78rem; font-weight:500; color:var(--muted); background:rgba(255,255,255,0.05); padding:2px 10px; border-radius:100px; }
+
+        /* ANSWER CARDS */
+        .answer-list { display:flex; flex-direction:column; gap:16px; }
+        .answer-card { background:var(--panel); border:1px solid var(--border2); border-radius:16px; overflow:hidden; animation:fadeUp 0.3s ease both; }
+        .answer-card.marked { border-color:rgba(201,168,76,0.3); }
+        .answer-card.accepted { border-color:rgba(34,197,94,0.3); background:rgba(34,197,94,0.03); }
+        .answer-head { padding:14px 22px; border-bottom:1px solid var(--border2); display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+        .student-info { display:flex; align-items:center; gap:10px; }
+        .student-avatar { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,rgba(201,168,76,0.4),rgba(232,201,106,0.4)); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:600; color:var(--gold); border:1px solid var(--border); }
+        .student-name { font-size:0.88rem; font-weight:500; }
+        .student-date { font-size:0.72rem; color:var(--muted); margin-top:1px; }
+        .badge { display:inline-flex; align-items:center; gap:4px; padding:4px 12px; border-radius:100px; font-size:0.71rem; font-weight:600; }
+        .badge-accepted { background:rgba(34,197,94,0.1); color:#4ade80; border:1px solid rgba(34,197,94,0.2); }
+        .badge-marked { background:rgba(201,168,76,0.1); color:var(--gold); border:1px solid var(--border); }
+        .answer-body { padding:18px 22px; font-size:0.88rem; line-height:1.75; color:rgba(255,255,255,0.85); white-space:pre-wrap; }
+
+        /* EXISTING FEEDBACK */
+        .existing-feedback { margin:0 22px 16px; padding:12px 16px; background:rgba(201,168,76,0.06); border:1px solid var(--border); border-radius:10px; font-size:0.82rem; }
+        .ef-label { font-size:0.7rem; font-weight:600; color:var(--gold); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:6px; }
+        .ef-row { display:flex; gap:16px; flex-wrap:wrap; }
+        .ef-item { display:flex; flex-direction:column; gap:2px; }
+        .ef-item .val { font-size:0.85rem; color:var(--white); }
+        .ef-item .lbl { font-size:0.7rem; color:var(--muted); }
+
+        /* MARK FORM */
+        .mark-form { padding:16px 22px; border-top:1px solid var(--border2); background:rgba(255,255,255,0.02); }
+        .mark-form-title { font-size:0.78rem; font-weight:600; color:var(--muted2); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:12px; }
+        .mark-grid { display:grid; grid-template-columns:100px 1fr auto; gap:12px; align-items:end; }
+        .mark-grid label { font-size:0.72rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.7px; margin-bottom:6px; display:block; }
+        .mark-grid input[type="number"], .mark-grid input[type="text"] { width:100%; padding:10px 12px; background:var(--input-bg); border:1.5px solid rgba(255,255,255,0.07); border-radius:9px; color:var(--white); font-family:'Outfit',sans-serif; font-size:0.88rem; outline:none; transition:border-color 0.2s; }
+        .mark-grid input:focus { border-color:var(--gold); }
+        .mark-grid input::placeholder { color:var(--muted); }
+        .accept-row { display:flex; align-items:center; gap:8px; margin-top:10px; font-size:0.82rem; color:var(--muted2); }
+        .accept-row input[type="checkbox"] { width:16px; height:16px; accent-color:var(--gold); cursor:pointer; }
+        .btn-mark { padding:10px 20px; background:var(--gold); color:var(--bg); border:none; border-radius:9px; font-family:'Outfit',sans-serif; font-size:0.85rem; font-weight:600; cursor:pointer; transition:all 0.2s; white-space:nowrap; }
+        .btn-mark:hover { background:var(--gold2); }
+
+        .empty-state { text-align:center; padding:60px 20px; background:var(--panel); border:1px solid var(--border2); border-radius:14px; }
+        .empty-icon { font-size:2.8rem; opacity:0.3; display:block; margin-bottom:12px; }
+        .empty-title { font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-weight:600; margin-bottom:6px; }
+        .empty-sub { font-size:0.82rem; color:var(--muted); }
+        @@keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+        @@media(max-width:900px) { .mark-grid{grid-template-columns:80px 1fr} .btn-mark{grid-column:1/-1;} }
+        @@media(max-width:768px) { .sidebar{display:none} .main{margin-left:0} .content{padding:20px} .topbar{padding:0 20px} }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-logo">📚</div>
+            <div><div class="brand-name">NoteBank</div><div class="brand-sub">Teacher Panel</div></div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-label">Questions</div>
+            <a href="/RelationQuestion/TeacherPanel" class="nav-item active"><span>📋</span> My Questions</a>
+            <a href="/RelationQuestion/Create" class="nav-item"><span>✏️</span> Ask New Question</a>
+            <div class="nav-label">Notes</div>
+            <a href="/Notes" class="nav-item"><span>🏠</span> Browse Notes</a>
+            <div class="nav-label">Account</div>
+            <a href="/Account/Profile" class="nav-item"><span>👤</span> Profile</a>
+            <a href="/Account/Logout" class="nav-item"><span>🚪</span> Logout</a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar">🎓</div>
+                <div>
+                    <div class="user-name">@Context.Session.GetString("UserName")</div>
+                    <div class="user-role">@Context.Session.GetString("UserRole")</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <div class="main">
+        <div class="topbar">
+            <div>
+                <div class="breadcrumb">
+                    <a href="/RelationQuestion/TeacherPanel">My Questions</a><span>›</span>
+                    <span class="current">Student Answers</span>
+                </div>
+                <div class="topbar-title">Student Answers</div>
+            </div>
+            <a href="/RelationQuestion/TeacherPanel" class="btn-back">← Back</a>
+        </div>
+
+        <div class="content">
+            <!-- QUESTION SUMMARY -->
+            <div class="q-summary">
+                <div class="q-summary-title">@Model.Title</div>
+                <div class="q-summary-meta">
+                    @if (Model.Major != null) { <span>Major: <span>@Model.Major.Name</span></span> }
+                    @if (Model.Term != null) { <span>Term: <span>@Model.Term.Name</span></span> }
+                    <span>Status: <span>@Model.Status</span></span>
+                    @if (Model.Deadline.HasValue) { <span>Deadline: <span>@Model.Deadline.Value.ToString("dd MMM yyyy")</span></span> }
+                </div>
+            </div>
+
+            <!-- ANSWERS -->
+            @if (!Model.Answers.Any())
+            {
+                <div class="empty-state">
+                    <span class="empty-icon">📭</span>
+                    <div class="empty-title">No answers yet</div>
+                    <div class="empty-sub">Students এখনো কোনো উত্তর দেয়নি।</div>
+                </div>
+            }
+            else
+            {
+                <div class="section-header">
+                    <div class="section-title">
+                        Submitted Answers <span class="count-pill">@Model.Answers.Count</span>
+                    </div>
+                </div>
+                <div class="answer-list">
+                    @foreach (var answer in Model.Answers.OrderByDescending(a => a.IsAccepted).ThenBy(a => a.CreatedAt))
+                    {
+                        <div class="answer-card @(answer.IsAccepted ? "accepted" : (answer.Marks.HasValue ? "marked" : ""))">
+                            <div class="answer-head">
+                                <div class="student-info">
+                                    <div class="student-avatar">@answer.User?.FullName?.Substring(0,1).ToUpper()</div>
+                                    <div>
+                                        <div class="student-name">@answer.User?.FullName</div>
+                                        <div class="student-date">@answer.CreatedAt.ToString("dd MMM yyyy, hh:mm tt")</div>
+                                    </div>
+                                </div>
+                                <div style="display:flex;gap:8px;align-items:center;">
+                                    @if (answer.IsAccepted) { <span class="badge badge-accepted">✅ Best Answer</span> }
+                                    @if (answer.Marks.HasValue) { <span class="badge badge-marked">🏅 @answer.Marks marks</span> }
+                                </div>
+                            </div>
+
+                            <div class="answer-body">@answer.Body</div>
+
+                            @if (answer.Marks.HasValue || !string.IsNullOrEmpty(answer.TeacherFeedback))
+                            {
+                                <div class="existing-feedback">
+                                    <div class="ef-label">Teacher Feedback</div>
+                                    <div class="ef-row">
+                                        @if (answer.Marks.HasValue)
+                                        {
+                                            <div class="ef-item"><span class="val">@answer.Marks</span><span class="lbl">Marks</span></div>
+                                        }
+                                        @if (!string.IsNullOrEmpty(answer.TeacherFeedback))
+                                        {
+                                            <div class="ef-item"><span class="val">@answer.TeacherFeedback</span><span class="lbl">Comment</span></div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+
+                            <!-- MARK FORM -->
+                            <div class="mark-form">
+                                <div class="mark-form-title">Give Marks & Feedback</div>
+                                <form method="post" action="/RelationQuestion/MarkAnswer">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="answerId" value="@answer.Id" />
+                                    <div class="mark-grid">
+                                        <div>
+                                            <label>Marks</label>
+                                            <input type="number" name="marks" value="@answer.Marks" placeholder="0–100" min="0" max="100" />
+                                        </div>
+                                        <div>
+                                            <label>Feedback / Comment</label>
+                                            <input type="text" name="feedback" value="@answer.TeacherFeedback" placeholder="Short feedback for the student..." />
+                                        </div>
+                                        <div>
+                                            <button type="submit" class="btn-mark">Save →</button>
+                                        </div>
+                                    </div>
+                                    <div class="accept-row">
+                                        <input type="checkbox" name="accept" value="true" @(answer.IsAccepted ? "checked" : "") id="accept-@answer.Id" />
+                                        <label for="accept-@answer.Id" style="text-transform:none;letter-spacing:normal;font-size:0.82rem;color:var(--muted2);cursor:pointer;">
+                                            Mark as Best Answer
+                                        </label>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</body>
+</html>

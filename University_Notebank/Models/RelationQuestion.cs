@@ -7,6 +7,7 @@ namespace University_Notebank.Models
     {
         public int Id { get; set; }
 
+        // The teacher who posted this question
         public int UserId { get; set; }
         public User User { get; set; }
 
@@ -22,7 +23,13 @@ namespace University_Notebank.Models
         public int? TermId { get; set; }
         public Term? Term { get; set; }
 
-        // Open → Answered → Closed
+        // Teacher can save as draft before publishing to students
+        public bool IsPublished { get; set; } = false;
+
+        // Optional deadline for student answers
+        public DateTime? Deadline { get; set; }
+
+        // Open → Active (students answering) → Closed
         public string Status { get; set; } = "Open";
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
