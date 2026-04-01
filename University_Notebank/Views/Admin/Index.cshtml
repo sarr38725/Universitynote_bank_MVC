@@ -1186,6 +1186,8 @@
             {
                 <a href="#pending-section" class="nav-item"><span class="nav-icon">⏳</span> Pending Approval <span class="nav-badge nav-badge-red">@pendingNotes.Count</span></a>
             }
+            <div class="nav-label">Requests</div>
+            <a href="/Admin/Requests" class="nav-item"><span class="nav-icon">📩</span> Note Requests</a>
             <div class="nav-label">Account</div>
             <a href="/Account/Logout" class="nav-item"><span class="nav-icon">🚪</span> Logout</a>
         </nav>
@@ -1286,19 +1288,19 @@
 
                                 <button type="button" class="btn-view"
                                         onclick="openModal(
-                                                '@note.Id',
-                                                '@Html.Raw(note.Title?.Replace("'", "\\'"))',
-                                                '@Html.Raw(note.Description?.Replace("'", "\\'") ?? "No description provided.")',
-                                                '@(note.Major?.Name ?? "")',
-                                                '@(note.Term?.Name ?? "")',
-                                                '@(note.Batch.HasValue ? "Batch " + note.Batch : "")',
-                                                '@(note.Uploader?.FullName ?? "")',
-                                                '@note.CreatedAt.ToString("dd MMM yyyy")',
-                                                '@(note.CoverImagePath ?? "")',
-                                                '@(note.FilePath ?? "")',
-                                                '@(note.FileName ?? "")',
-                                                '@(note.FileType ?? "")'
-                                            )">
+                                                        '@note.Id',
+                                                        '@Html.Raw(note.Title?.Replace("'", "\\'"))',
+                                                        '@Html.Raw(note.Description?.Replace("'", "\\'") ?? "No description provided.")',
+                                                        '@(note.Major?.Name ?? "")',
+                                                        '@(note.Term?.Name ?? "")',
+                                                        '@(note.Batch.HasValue ? "Batch " + note.Batch : "")',
+                                                        '@(note.Uploader?.FullName ?? "")',
+                                                        '@note.CreatedAt.ToString("dd MMM yyyy")',
+                                                        '@(note.CoverImagePath ?? "")',
+                                                        '@(note.FilePath ?? "")',
+                                                        '@(note.FileName ?? "")',
+                                                        '@(note.FileType ?? "")'
+                                                    )">
                                     👁 View
                                 </button>
 

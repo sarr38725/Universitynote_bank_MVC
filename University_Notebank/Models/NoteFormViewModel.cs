@@ -13,7 +13,7 @@ namespace University_Notebank.Models
         public int TermId { get; set; }
         public int? Batch { get; set; }
         public IFormFile CoverImage { get; set; }
-        public IFormFile NoteFile { get; set; }
+        public List<IFormFile> NoteFiles { get; set; }
         public List<SelectListItem> Majors { get; set; }
         public List<SelectListItem> Terms { get; set; }
         public List<SelectListItem> Batches { get; set; }

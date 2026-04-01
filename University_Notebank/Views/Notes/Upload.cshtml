@@ -21,7 +21,6 @@
             --navy: #0b1929;
             --navy2: #112240;
             --gold: #c9a84c;
-            --gold2: #e8c96a;
             --gold-dim: rgba(201,168,76,0.1);
             --border: rgba(201,168,76,0.25);
             --border2: rgba(11,25,41,0.08);
@@ -30,6 +29,9 @@
             --muted: #6b7a8d;
             --red: #ef4444;
             --input-bg: #f7f3eb;
+            --blue: #3b82f6;
+            --blue-dim: rgba(59,130,246,0.06);
+            --blue-border: rgba(59,130,246,0.2);
         }
 
         body {
@@ -39,7 +41,7 @@
             min-height: 100vh;
         }
 
-        /* NAVBAR */
+        /* ── NAVBAR ── */
         nav {
             position: sticky;
             top: 0;
@@ -126,7 +128,7 @@
                 color: var(--navy);
             }
 
-        /* PAGE HEADER */
+        /* ── PAGE HEADER ── */
         .page-header {
             background: var(--navy);
             padding: 40px 48px;
@@ -183,7 +185,7 @@
             font-weight: 300;
         }
 
-        /* NOTICE */
+        /* ── NOTICE ── */
         .notice-bar {
             background: rgba(201,168,76,0.08);
             border-bottom: 1px solid rgba(201,168,76,0.2);
@@ -200,7 +202,7 @@
             color: #7a5c1a;
         }
 
-        /* FORM AREA */
+        /* ── FORM AREA ── */
         .form-area {
             max-width: 800px;
             margin: 0 auto;
@@ -319,7 +321,142 @@
             padding-right: 36px;
         }
 
-        /* Upload areas */
+        /* ── MULTI FILE DROP ZONE ── */
+        .multi-drop-zone {
+            border: 2px dashed var(--blue-border);
+            border-radius: 12px;
+            padding: 34px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            background: var(--input-bg);
+        }
+
+            .multi-drop-zone:hover, .multi-drop-zone.drag-over {
+                border-color: var(--blue);
+                background: rgba(59,130,246,0.04);
+            }
+
+            .multi-drop-zone input[type="file"] {
+                position: absolute;
+                inset: 0;
+                opacity: 0;
+                cursor: pointer;
+                width: 100%;
+                height: 100%;
+            }
+
+        .drop-icon {
+            font-size: 2.4rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .drop-text {
+            font-size: 0.88rem;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
+
+            .drop-text strong {
+                color: var(--blue);
+            }
+
+        .drop-hint {
+            font-size: 0.72rem;
+            color: var(--muted);
+        }
+
+        /* ── FILE LIST ── */
+        .file-list {
+            margin-top: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .file-list-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            background: var(--blue-dim);
+            border: 1px solid var(--blue-border);
+            border-radius: 9px;
+            animation: slideIn 0.2s ease;
+        }
+
+        @@keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .file-list-icon {
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        .file-list-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .file-list-name {
+            font-size: 0.83rem;
+            font-weight: 500;
+            color: #1d4ed8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .file-list-size {
+            font-size: 0.71rem;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .file-list-remove {
+            background: none;
+            border: none;
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 4px 7px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+
+            .file-list-remove:hover {
+                background: rgba(239,68,68,0.1);
+                color: var(--red);
+            }
+
+        .file-count-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 10px;
+            padding: 4px 12px;
+            background: rgba(59,130,246,0.08);
+            border: 1px solid var(--blue-border);
+            border-radius: 100px;
+            font-size: 0.73rem;
+            color: #1d4ed8;
+            font-weight: 500;
+        }
+
+        /* ── COVER IMAGE ── */
         .upload-area {
             border: 2px dashed rgba(11,25,41,0.12);
             border-radius: 12px;
@@ -336,21 +473,14 @@
                 background: rgba(201,168,76,0.03);
             }
 
-        .file-upload-area {
-            border: 2px dashed rgba(59,130,246,0.2);
-            border-radius: 12px;
-            padding: 28px 20px;
-            text-align: center;
+        .file-input-hidden {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
             cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-            background: var(--input-bg);
+            width: 100%;
+            height: 100%;
         }
-
-            .file-upload-area:hover {
-                border-color: rgba(59,130,246,0.5);
-                background: rgba(59,130,246,0.03);
-            }
 
         .upload-icon {
             font-size: 2rem;
@@ -371,15 +501,6 @@
         .upload-hint {
             font-size: 0.72rem;
             color: var(--muted);
-        }
-
-        .file-input-hidden {
-            position: absolute;
-            inset: 0;
-            opacity: 0;
-            cursor: pointer;
-            width: 100%;
-            height: 100%;
         }
 
         .preview-box {
@@ -420,55 +541,7 @@
                 background: var(--red);
             }
 
-        .file-info-box {
-            display: none;
-            margin-top: 10px;
-            padding: 12px 14px;
-            background: rgba(59,130,246,0.06);
-            border: 1px solid rgba(59,130,246,0.15);
-            border-radius: 9px;
-            align-items: center;
-            gap: 10px;
-        }
-
-            .file-info-box.show {
-                display: flex;
-            }
-
-        .file-info-icon {
-            font-size: 1.3rem;
-            flex-shrink: 0;
-        }
-
-        .file-info-name {
-            font-size: 0.83rem;
-            color: #2563eb;
-            font-weight: 500;
-            flex: 1;
-            word-break: break-all;
-        }
-
-        .file-info-size {
-            font-size: 0.73rem;
-            color: var(--muted);
-            white-space: nowrap;
-        }
-
-        .file-info-remove {
-            background: none;
-            border: none;
-            color: var(--muted);
-            cursor: pointer;
-            font-size: 1rem;
-            padding: 4px;
-            transition: color 0.2s;
-        }
-
-            .file-info-remove:hover {
-                color: var(--red);
-            }
-
-        /* Submit bar */
+        /* ── SUBMIT BAR ── */
         .submit-bar {
             display: flex;
             align-items: center;
@@ -573,13 +646,13 @@
     <!-- NOTICE -->
     <div class="notice-bar">
         <div class="notice-inner">
-            ⏳ <span>Your note will be <strong>reviewed by an admin</strong> before it appears publicly. You can track the status in <a href="/Notes/MyUploads" style="color:var(--gold);text-decoration:none;font-weight:600;">My Uploads</a>.</span>
+            ⏳ <span>Your note will be <strong>reviewed by an admin</strong> before it appears publicly. Track status in <a href="/Notes/MyUploads" style="color:var(--gold);text-decoration:none;font-weight:600;">My Uploads</a>.</span>
         </div>
     </div>
 
     <!-- FORM -->
     <div class="form-area">
-        <form method="post" action="/Notes/Upload" enctype="multipart/form-data">
+        <form method="post" action="/Notes/Upload" enctype="multipart/form-data" id="uploadForm">
             @Html.AntiForgeryToken()
 
             <!-- Note Details -->
@@ -622,28 +695,35 @@
                 </div>
             </div>
 
-            <!-- Note File -->
+            <!-- Note Files (Multiple) -->
             <div class="form-panel">
                 <div class="panel-head">
                     <div class="panel-head-icon">📁</div>
                     <div class="panel-head-text">
-                        <h3>Note File</h3>
-                        <p>Upload PDF, DOCX, PPTX, ZIP, or any other format</p>
+                        <h3>Note Files</h3>
+                        <p>Upload one or more files — PDF, DOCX, PPTX, ZIP, MP4, or any format</p>
                     </div>
                 </div>
                 <div class="panel-body">
-                    <div class="file-upload-area" id="fileUploadArea">
-                        <input type="file" name="NoteFile" id="noteFileInput" class="file-input-hidden" accept="*/*" />
-                        <span class="upload-icon">📁</span>
-                        <div class="upload-text"><strong>Click to upload</strong> or drag & drop</div>
-                        <div class="upload-hint">Any file type — PDF, DOCX, PPTX, ZIP, MP4...</div>
+
+                    <!-- Drop zone -->
+                    <div class="multi-drop-zone" id="multiDropZone">
+                        <input type="file" name="NoteFiles" id="noteFilesInput" multiple accept="*/*" />
+                        <span class="drop-icon">📂</span>
+                        <div class="drop-text"><strong>Click to select</strong> or drag &amp; drop files here</div>
+                        <div class="drop-hint">You can select multiple files at once — any format supported</div>
                     </div>
-                    <div class="file-info-box" id="fileInfoBox">
-                        <span class="file-info-icon" id="fileInfoIcon">📄</span>
-                        <span class="file-info-name" id="fileInfoName"></span>
-                        <span class="file-info-size" id="fileInfoSize"></span>
-                        <button type="button" class="file-info-remove" id="fileRemoveBtn">✕</button>
+
+                    <!-- Selected file list -->
+                    <div class="file-list" id="fileList"></div>
+
+                    <!-- File count badge -->
+                    <div id="fileCountWrap" style="display:none;">
+                        <span class="file-count-badge">
+                            📎 <span id="fileCountText"></span>
+                        </span>
                     </div>
+
                 </div>
             </div>
 
@@ -679,64 +759,120 @@
     </div>
 
     <script>
-        // Cover image preview
-        const coverInput = document.getElementById('coverInput');
-        const uploadArea = document.getElementById('uploadArea');
-        const previewBox = document.getElementById('previewBox');
-        const previewImg = document.getElementById('previewImg');
+        // ── COVER IMAGE PREVIEW ──
+        const coverInput    = document.getElementById('coverInput');
+        const uploadArea    = document.getElementById('uploadArea');
+        const previewBox    = document.getElementById('previewBox');
+        const previewImg    = document.getElementById('previewImg');
         const coverRemoveBtn = document.getElementById('coverRemoveBtn');
 
         coverInput.addEventListener('change', function () {
             const file = this.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = e => {
-                    previewImg.src = e.target.result;
-                    previewBox.style.display = 'block';
-                    uploadArea.style.display = 'none';
-                };
-                reader.readAsDataURL(file);
-            }
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                previewImg.src = e.target.result;
+                previewBox.style.display = 'block';
+                uploadArea.style.display  = 'none';
+            };
+            reader.readAsDataURL(file);
         });
 
         coverRemoveBtn.addEventListener('click', () => {
             coverInput.value = '';
-            previewImg.src = '';
+            previewImg.src   = '';
             previewBox.style.display = 'none';
             uploadArea.style.display = 'block';
         });
 
-        // Note file info
-        const noteFileInput = document.getElementById('noteFileInput');
-        const fileUploadArea = document.getElementById('fileUploadArea');
-        const fileInfoBox = document.getElementById('fileInfoBox');
-        const fileInfoName = document.getElementById('fileInfoName');
-        const fileInfoSize = document.getElementById('fileInfoSize');
-        const fileInfoIcon = document.getElementById('fileInfoIcon');
-        const fileRemoveBtn = document.getElementById('fileRemoveBtn');
+        // ── MULTI FILE UPLOAD ──
+        const noteFilesInput = document.getElementById('noteFilesInput');
+        const multiDropZone  = document.getElementById('multiDropZone');
+        const fileList       = document.getElementById('fileList');
+        const fileCountWrap  = document.getElementById('fileCountWrap');
+        const fileCountText  = document.getElementById('fileCountText');
 
-        const fileIcons = {
-            pdf: '📕', doc: '📘', docx: '📘', ppt: '📙', pptx: '📙',
-            xls: '📗', xlsx: '📗', zip: '🗜️', rar: '🗜️',
-            mp4: '🎬', mp3: '🎵', png: '🖼️', jpg: '🖼️', jpeg: '🖼️', txt: '📄'
+        // Use DataTransfer to accumulate files across multiple picks
+        let dt = new DataTransfer();
+
+        const FILE_ICONS = {
+            pdf:'📕', doc:'📘', docx:'📘', ppt:'📙', pptx:'📙',
+            xls:'📗', xlsx:'📗', zip:'🗜️', rar:'🗜️', '7z':'🗜️',
+            mp4:'🎬', avi:'🎬', mkv:'🎬', mp3:'🎵', wav:'🎵',
+            png:'🖼️', jpg:'🖼️', jpeg:'🖼️', gif:'🖼️', webp:'🖼️',
+            txt:'📄', csv:'📊', json:'📄', xml:'📄'
         };
 
-        noteFileInput.addEventListener('change', function () {
-            const file = this.files[0];
-            if (file) {
-                const ext = file.name.split('.').pop().toLowerCase();
-                fileInfoIcon.textContent = fileIcons[ext] || '📄';
-                fileInfoName.textContent = file.name;
-                fileInfoSize.textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
-                fileInfoBox.classList.add('show');
-                fileUploadArea.style.display = 'none';
+        function getIcon(name) {
+            const ext = name.split('.').pop().toLowerCase();
+            return FILE_ICONS[ext] || '📄';
+        }
+
+        function fmtSize(bytes) {
+            if (bytes >= 1048576) return (bytes / 1048576).toFixed(2) + ' MB';
+            return (bytes / 1024).toFixed(1) + ' KB';
+        }
+
+        function render() {
+            fileList.innerHTML = '';
+            const files = dt.files;
+
+            for (let i = 0; i < files.length; i++) {
+                const f = files[i];
+                const div = document.createElement('div');
+                div.className = 'file-list-item';
+                div.innerHTML = `
+                    <span class="file-list-icon">${getIcon(f.name)}</span>
+                    <div class="file-list-info">
+                        <div class="file-list-name" title="${f.name}">${f.name}</div>
+                        <div class="file-list-size">${fmtSize(f.size)}</div>
+                    </div>
+                    <button type="button" class="file-list-remove" data-idx="${i}" title="Remove">✕</button>
+                `;
+                fileList.appendChild(div);
             }
+
+            if (files.length > 0) {
+                fileCountText.textContent = files.length === 1 ? '1 file selected' : `${files.length} files selected`;
+                fileCountWrap.style.display = 'block';
+            } else {
+                fileCountWrap.style.display = 'none';
+            }
+
+            // Sync back to input so form submits the right files
+            noteFilesInput.files = dt.files;
+        }
+
+        // Add files on pick
+        noteFilesInput.addEventListener('change', function () {
+            for (const f of this.files) dt.items.add(f);
+            render();
         });
 
-        fileRemoveBtn.addEventListener('click', () => {
-            noteFileInput.value = '';
-            fileInfoBox.classList.remove('show');
-            fileUploadArea.style.display = 'block';
+        // Remove individual file
+        fileList.addEventListener('click', function (e) {
+            const btn = e.target.closest('.file-list-remove');
+            if (!btn) return;
+            const idx = parseInt(btn.dataset.idx, 10);
+            const newDt = new DataTransfer();
+            for (let i = 0; i < dt.files.length; i++) {
+                if (i !== idx) newDt.items.add(dt.files[i]);
+            }
+            dt = newDt;
+            render();
+        });
+
+        // Drag & drop
+        multiDropZone.addEventListener('dragover', e => {
+            e.preventDefault();
+            multiDropZone.classList.add('drag-over');
+        });
+        multiDropZone.addEventListener('dragleave', () => multiDropZone.classList.remove('drag-over'));
+        multiDropZone.addEventListener('drop', e => {
+            e.preventDefault();
+            multiDropZone.classList.remove('drag-over');
+            for (const f of e.dataTransfer.files) dt.items.add(f);
+            render();
         });
     </script>
 

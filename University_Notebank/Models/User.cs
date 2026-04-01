@@ -8,7 +8,7 @@
         public string PasswordHash { get; set; }
         public string Role { get; set; } = "Student";
 
-        // ✅ Extra profile fields
+        //  Extra profile fields
         public string? Department { get; set; }
         public string? StudentId { get; set; }
         public string? Phone { get; set; }

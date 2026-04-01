@@ -1,11 +1,9 @@
 wwwroot\css\site.css
 wwwroot\favicon.ico
-wwwroot\images\covers\6ca79d5b-82cc-445f-aa74-3a27fe74880e.jpeg
 wwwroot\images\covers\6e93b58a-aff3-4e7f-9a61-38b175cc3a1c.png
-wwwroot\images\covers\7bd4e5a9-cd62-433f-aca7-85b2251a48af.jpeg
+wwwroot\images\covers\7866e3f9-fba8-4a0b-8ba7-39c324d9579a.png
 wwwroot\images\covers\990ae82c-9c16-4a34-b360-0d4b244f8f64.png
 wwwroot\images\covers\9bda52ce-12b7-41c0-9e80-8d23ace12223.jpeg
-wwwroot\images\covers\fe6cb671-1c75-4936-9550-ec0a676b17bc.png
 wwwroot\js\site.js
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map
@@ -64,7 +62,5 @@ wwwroot\lib\jquery\dist\jquery.js
 wwwroot\lib\jquery\dist\jquery.min.js
 wwwroot\lib\jquery\dist\jquery.min.map
 wwwroot\lib\jquery\LICENSE.txt
-wwwroot\uploads\notes\50c3afe0-0b9f-48fa-8184-bc6ce8035f00.pdf
+wwwroot\uploads\notes\0d27754d-f27c-46a6-be76-79a679f253c9.pdf
 wwwroot\uploads\notes\991cfb00-157a-4f4e-8a4c-c71ffd6b361a.pdf
-wwwroot\uploads\notes\b9d98f4a-03b1-420d-9148-c645b1374bd5.pdf
-wwwroot\uploads\notes\e58b6bea-d980-4937-b605-26c810f19c3d.pdf

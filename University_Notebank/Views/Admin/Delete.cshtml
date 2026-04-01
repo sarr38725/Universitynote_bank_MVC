@@ -1,9 +1,480 @@
 ﻿@model University_Notebank.Models.Note
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Delete Note – Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-<h2>Delete Note</h2>
-<p>Are you sure you want to delete: <strong>@Model.Title</strong>?</p>
+        :root {
+            --bg: #080f1a;
+            --panel: #0f1d30;
+            --panel2: #122038;
+            --gold: #c9a84c;
+            --gold2: #e8c96a;
+            --gold-dim: rgba(201,168,76,0.12);
+            --border: rgba(201,168,76,0.15);
+            --border2: rgba(255,255,255,0.05);
+            --white: #ffffff;
+            --muted: #6b7a99;
+            --muted2: #8892a4;
+            --red: #ef4444;
+            --red-dim: rgba(239,68,68,0.12);
+            --red-border: rgba(239,68,68,0.3);
+        }
 
-<form method="post">
-    <button type="submit">Yes, Delete</button>
-    <a href="/Admin">Cancel</a>
-</form>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--white);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        /* ── CARD ── */
+        .delete-card {
+            width: 100%;
+            max-width: 560px;
+            background: var(--panel);
+            border: 1px solid var(--border2);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+            animation: fadeUp 0.4s ease both;
+        }
+
+        @@keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ── DANGER HEADER ── */
+        .card-header {
+            background: var(--red-dim);
+            border-bottom: 1px solid var(--red-border);
+            padding: 28px 32px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .danger-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            background: rgba(239,68,68,0.15);
+            border: 1px solid var(--red-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            flex-shrink: 0;
+        }
+
+        .header-text h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--red);
+            line-height: 1.2;
+        }
+
+        .header-text p {
+            font-size: 0.82rem;
+            color: var(--muted2);
+            margin-top: 4px;
+        }
+
+        /* ── NOTE PREVIEW ── */
+        .card-body {
+            padding: 28px 32px;
+        }
+
+        .note-preview {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            padding: 20px;
+            background: var(--panel2);
+            border: 1px solid var(--border2);
+            border-radius: 14px;
+            margin-bottom: 24px;
+        }
+
+        .note-cover {
+            width: 72px;
+            height: 72px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .note-cover-placeholder {
+            width: 72px;
+            height: 72px;
+            border-radius: 10px;
+            background: var(--gold-dim);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+
+        .note-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .note-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 6px;
+            word-break: break-word;
+        }
+
+        .note-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .meta-badge {
+            font-size: 0.72rem;
+            padding: 3px 10px;
+            border-radius: 100px;
+            background: var(--gold-dim);
+            color: var(--gold);
+            border: 1px solid var(--border);
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+
+        .note-desc {
+            font-size: 0.82rem;
+            color: var(--muted2);
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* ── FILE INFO ROW ── */
+        .file-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            background: var(--panel2);
+            border: 1px solid var(--border2);
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .file-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 9px;
+            background: var(--gold-dim);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            flex-shrink: 0;
+        }
+
+        .file-detail {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .file-name {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--white);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .file-size {
+            font-size: 0.72rem;
+            color: var(--muted2);
+            margin-top: 2px;
+        }
+
+        /* ── WARNING BOX ── */
+        .warning-box {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 16px;
+            background: var(--red-dim);
+            border: 1px solid var(--red-border);
+            border-radius: 12px;
+            margin-bottom: 28px;
+        }
+
+            .warning-box span {
+                font-size: 18px;
+                flex-shrink: 0;
+                margin-top: 1px;
+            }
+
+            .warning-box p {
+                font-size: 0.83rem;
+                color: #fca5a5;
+                line-height: 1.6;
+            }
+
+        /* ── ACTIONS ── */
+        .card-actions {
+            display: flex;
+            gap: 12px;
+            padding: 0 32px 28px;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 13px 24px;
+            border-radius: 10px;
+            border: 1px solid var(--border2);
+            background: transparent;
+            color: var(--muted2);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.92rem;
+            font-weight: 500;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+            .btn-cancel:hover {
+                background: rgba(255,255,255,0.04);
+                color: var(--white);
+                border-color: rgba(255,255,255,0.12);
+            }
+
+        .btn-delete {
+            flex: 1;
+            padding: 13px 24px;
+            border-radius: 10px;
+            border: none;
+            background: var(--red);
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.92rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+            .btn-delete:hover {
+                background: #dc2626;
+                transform: translateY(-1px);
+                box-shadow: 0 8px 24px rgba(239,68,68,0.35);
+            }
+
+            .btn-delete:active {
+                transform: translateY(0);
+            }
+
+        /* ── TOP NAV ── */
+        .top-bar {
+            width: 100%;
+            max-width: 560px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .brand {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--white);
+            text-decoration: none;
+        }
+
+            .brand span {
+                color: var(--gold);
+            }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.78rem;
+            color: var(--muted);
+            margin-left: auto;
+        }
+
+            .breadcrumb a {
+                color: var(--muted2);
+                text-decoration: none;
+                transition: color 0.2s;
+            }
+
+                .breadcrumb a:hover {
+                    color: var(--gold);
+                }
+
+            .breadcrumb .sep {
+                opacity: 0.4;
+            }
+
+            .breadcrumb .current {
+                color: var(--red);
+            }
+    </style>
+</head>
+<body>
+
+    <!-- Top bar -->
+    <div class="top-bar">
+        <a href="/Admin" class="brand">Note<span>Bank</span> Admin</a>
+        <nav class="breadcrumb">
+            <a href="/Admin">Dashboard</a>
+            <span class="sep">›</span>
+            <span class="current">Delete Note</span>
+        </nav>
+    </div>
+
+    <!-- Delete Card -->
+    <div class="delete-card">
+
+        <!-- Header -->
+        <div class="card-header">
+            <div class="danger-icon">🗑️</div>
+            <div class="header-text">
+                <h1>Delete Note</h1>
+                <p>This action is permanent and cannot be undone.</p>
+            </div>
+        </div>
+
+        <!-- Body -->
+        <div class="card-body">
+
+            <!-- Note Preview -->
+            <div class="note-preview">
+                @if (!string.IsNullOrEmpty(Model.CoverImagePath))
+                {
+                    <img src="@Model.CoverImagePath" alt="Cover" class="note-cover" />
+                }
+                else
+                {
+                    <div class="note-cover-placeholder">📄</div>
+                }
+                <div class="note-info">
+                    <div class="note-title">@Model.Title</div>
+                    <div class="note-meta">
+                        @if (Model.Major != null)
+                        {
+                            <span class="meta-badge">📂 @Model.Major.Name</span>
+                        }
+                        @if (Model.Term != null)
+                        {
+                            <span class="meta-badge">📅 @Model.Term.Name</span>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.Level))
+                        {
+                            <span class="meta-badge">🎓 @Model.Level</span>
+                        }
+                        @if (Model.Batch.HasValue)
+                        {
+                            <span class="meta-badge">👥 Batch @Model.Batch</span>
+                        }
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.Description))
+                    {
+                        <p class="note-desc">@Model.Description</p>
+                    }
+                </div>
+            </div>
+
+            <!-- File info -->
+            @if (!string.IsNullOrEmpty(Model.FileName))
+            {
+                <div class="file-row">
+                    <div class="file-icon">
+                        @(Model.FileType == ".pdf" ? "📕" : Model.FileType == ".docx" || Model.FileType == ".doc" ? "📝" : "📎")
+                    </div>
+                    <div class="file-detail">
+                        <div class="file-name">@Model.FileName</div>
+                        <div class="file-size">
+                            @if (Model.FileSize > 0)
+                            {
+                                @(Model.FileSize >= 1048576
+                                                        ? $"{Model.FileSize / 1048576.0:0.#} MB"
+                                                        : $"{Model.FileSize / 1024.0:0.#} KB")
+                            }
+                            else
+                            {
+                                <text>File attached</text>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Warning -->
+            <div class="warning-box">
+                <span>⚠️</span>
+                <p>
+                    Deleting this note will permanently remove the record and all associated files
+                    (cover image &amp; uploaded document) from the server. This cannot be recovered.
+                </p>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="card-actions">
+            <a href="/Admin" class="btn-cancel">← Cancel</a>
+            <form method="post" style="flex:1;display:flex;">
+                <button type="submit" class="btn-delete" style="width:100%;">
+                    🗑️ Yes, Delete Note
+                </button>
+            </form>
+        </div>
+
+    </div>
+
+</body>
+</html>

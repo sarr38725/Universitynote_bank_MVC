@@ -21,7 +21,9 @@ namespace University_Notebank.Models
         public User Uploader { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        // ✅ নতুন field
+        // 
         public string Status { get; set; } = "Pending"; // Pending, Approved, Rejected
+
+        public ICollection<NoteAttachment> Attachments { get; set; } = new List<NoteAttachment>();
     }
 }

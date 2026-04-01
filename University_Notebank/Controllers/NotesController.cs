@@ -26,7 +26,7 @@ namespace University_Notebank.Controllers
                 .Include(n => n.Major)
                 .Include(n => n.Term)
                 .Include(n => n.Uploader)
-                .Where(n => n.Status == "Approved") // ✅ শুধু Approved notes
+                .Where(n => n.Status == "Approved") // Approved notes
                 .AsQueryable();
 
             if (majorId.HasValue)
@@ -102,10 +102,10 @@ namespace University_Notebank.Controllers
                 return RedirectToAction("Login", "Account");
 
             string imagePath = null;
-            string filePath = null;
-            string fileName = null;
-            string fileType = null;
-            long fileSize = 0;
+            string firstFilePath = null;
+            string firstFileName = null;
+            string firstFileType = null;
+            long firstFileSize = 0;
 
             if (model.CoverImage != null)
             {
@@ -117,18 +117,20 @@ namespace University_Notebank.Controllers
                 imagePath = "/images/covers/" + imgName;
             }
 
-            if (model.NoteFile != null)
+            // Save first file info in Note for backward compatibility
+            if (model.NoteFiles != null && model.NoteFiles.Count > 0)
             {
-                fileName = model.NoteFile.FileName;
-                fileType = Path.GetExtension(model.NoteFile.FileName).ToLower();
-                fileSize = model.NoteFile.Length;
+                var first = model.NoteFiles[0];
+                firstFileName = first.FileName;
+                firstFileType = Path.GetExtension(first.FileName).ToLower();
+                firstFileSize = first.Length;
 
-                var safeFileName = Guid.NewGuid() + fileType;
+                var safeFileName = Guid.NewGuid() + firstFileType;
                 var fileSave = Path.Combine(_env.WebRootPath, "uploads", "notes", safeFileName);
                 Directory.CreateDirectory(Path.GetDirectoryName(fileSave));
                 using var fileStream = new FileStream(fileSave, FileMode.Create);
-                await model.NoteFile.CopyToAsync(fileStream);
-                filePath = "/uploads/notes/" + safeFileName;
+                await first.CopyToAsync(fileStream);
+                firstFilePath = "/uploads/notes/" + safeFileName;
             }
 
             var note = new Note
@@ -140,16 +142,46 @@ namespace University_Notebank.Controllers
                 Batch = model.Batch,
                 Level = null,
                 CoverImagePath = imagePath,
-                FilePath = filePath,
-                FileName = fileName,
-                FileType = fileType,
-                FileSize = fileSize,
+                FilePath = firstFilePath,
+                FileName = firstFileName,
+                FileType = firstFileType,
+                FileSize = firstFileSize,
                 UploaderId = (int)HttpContext.Session.GetInt32("UserId"),
-                Status = "Pending" // ✅ Admin approve করার আগে Pending
+                Status = "Pending"
             };
 
             _db.Notes.Add(note);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
+
+            // Save additional files (2nd file onwards) as attachments
+            if (model.NoteFiles != null && model.NoteFiles.Count > 1)
+            {
+                var uploadsDir = Path.Combine(_env.WebRootPath, "uploads", "notes");
+                Directory.CreateDirectory(uploadsDir);
+
+                for (int i = 1; i < model.NoteFiles.Count; i++)
+                {
+                    var f = model.NoteFiles[i];
+                    if (f == null || f.Length == 0) continue;
+
+                    var ext = Path.GetExtension(f.FileName).ToLower();
+                    var safeName = Guid.NewGuid() + ext;
+                    var savePath = Path.Combine(uploadsDir, safeName);
+                    using var fs = new FileStream(savePath, FileMode.Create);
+                    await f.CopyToAsync(fs);
+
+                    _db.NoteAttachments.Add(new NoteAttachment
+                    {
+                        NoteId = note.Id,
+                        FileName = f.FileName,
+                        FilePath = "/uploads/notes/" + safeName,
+                        FileType = ext,
+                        FileSize = f.Length
+                    });
+                }
+
+                await _db.SaveChangesAsync();
+            }
 
             TempData["UploadSuccess"] = "Your note has been submitted and is awaiting admin approval.";
             return RedirectToAction("MyUploads");

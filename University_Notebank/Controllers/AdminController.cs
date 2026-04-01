@@ -123,17 +123,18 @@ namespace University_Notebank.Controllers
                 imagePath = "/images/covers/" + imgName;
             }
 
-            if (model.NoteFile != null)
+            var primaryFile = model.NoteFiles?.FirstOrDefault();
+            if (primaryFile != null)
             {
-                fileName = model.NoteFile.FileName;
-                fileType = Path.GetExtension(model.NoteFile.FileName).ToLower();
-                fileSize = model.NoteFile.Length;
+                fileName = primaryFile.FileName;
+                fileType = Path.GetExtension(primaryFile.FileName).ToLower();
+                fileSize = primaryFile.Length;
 
                 var safeFileName = Guid.NewGuid() + fileType;
                 var fileSave = Path.Combine(_env.WebRootPath, "uploads", "notes", safeFileName);
                 Directory.CreateDirectory(Path.GetDirectoryName(fileSave));
                 using var fileStream = new FileStream(fileSave, FileMode.Create);
-                await model.NoteFile.CopyToAsync(fileStream);
+                await primaryFile.CopyToAsync(fileStream);
                 filePath = "/uploads/notes/" + safeFileName;
             }
 
@@ -221,23 +222,121 @@ namespace University_Notebank.Controllers
                 note.CoverImagePath = "/images/covers/" + imgName;
             }
 
-            if (model.NoteFile != null)
+            var editFile = model.NoteFiles?.FirstOrDefault();
+            if (editFile != null)
             {
-                note.FileName = model.NoteFile.FileName;
-                note.FileType = Path.GetExtension(model.NoteFile.FileName).ToLower();
-                note.FileSize = model.NoteFile.Length;
+                note.FileName = editFile.FileName;
+                note.FileType = Path.GetExtension(editFile.FileName).ToLower();
+                note.FileSize = editFile.Length;
 
                 var safeFileName = Guid.NewGuid() + note.FileType;
                 var fileSave = Path.Combine(_env.WebRootPath, "uploads", "notes", safeFileName);
                 Directory.CreateDirectory(Path.GetDirectoryName(fileSave));
                 using var fileStream = new FileStream(fileSave, FileMode.Create);
-                await model.NoteFile.CopyToAsync(fileStream);
+                await editFile.CopyToAsync(fileStream);
                 note.FilePath = "/uploads/notes/" + safeFileName;
             }
 
             _db.SaveChanges();
             return RedirectToAction("Index");
         }
+
+        // ─────────────────────────────────────────────────────────────────
+        //  NOTE REQUEST MANAGEMENT
+        // ─────────────────────────────────────────────────────────────────
+
+        // GET: /Admin/Requests
+        public IActionResult Requests()
+        {
+            if (!IsAdmin()) return RedirectToAction("Login", "Account");
+
+            var requests = _db.NoteRequests
+                .Include(r => r.User)
+                .Include(r => r.Major)
+                .Include(r => r.Term)
+                .Include(r => r.Messages)
+                .OrderByDescending(r => r.CreatedAt)
+                .ToList();
+
+            return View(requests);
+        }
+
+        // GET: /Admin/RequestDetail/5
+        public IActionResult RequestDetail(int id)
+        {
+            if (!IsAdmin()) return RedirectToAction("Login", "Account");
+
+            var request = _db.NoteRequests
+                .Include(r => r.User)
+                .Include(r => r.Major)
+                .Include(r => r.Term)
+                .Include(r => r.Messages).ThenInclude(m => m.Sender)
+                .FirstOrDefault(r => r.Id == id);
+
+            if (request == null) return NotFound();
+            return View(request);
+        }
+
+        // POST: /Admin/SendReply
+        [HttpPost]
+        public IActionResult SendReply(int requestId, string message)
+        {
+            if (!IsAdmin()) return RedirectToAction("Login", "Account");
+
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                _db.RequestMessages.Add(new RequestMessage
+                {
+                    NoteRequestId = requestId,
+                    SenderId = (int)HttpContext.Session.GetInt32("UserId"),
+                    Message = message.Trim(),
+                    IsAdmin = true,
+                    SentAt = DateTime.Now
+                });
+
+                // Status → Reviewed (admin replied)
+                var req = _db.NoteRequests.Find(requestId);
+                if (req != null && req.Status == "Pending")
+                    req.Status = "Reviewed";
+
+                _db.SaveChanges();
+            }
+
+            return RedirectToAction("RequestDetail", new { id = requestId });
+        }
+
+        // POST: /Admin/FulfillRequest/5
+        [HttpPost]
+        public IActionResult FulfillRequest(int id)
+        {
+            if (!IsAdmin()) return RedirectToAction("Login", "Account");
+
+            var req = _db.NoteRequests.Find(id);
+            if (req == null) return NotFound();
+
+            req.Status = "Fulfilled";
+            _db.SaveChanges();
+
+            TempData["Success"] = "Request Fulfilled olarak işaretlendi.";
+            return RedirectToAction("RequestDetail", new { id });
+        }
+
+        // POST: /Admin/RejectRequest/5
+        [HttpPost]
+        public IActionResult RejectRequest(int id)
+        {
+            if (!IsAdmin()) return RedirectToAction("Login", "Account");
+
+            var req = _db.NoteRequests.Find(id);
+            if (req == null) return NotFound();
+
+            req.Status = "Rejected";
+            _db.SaveChanges();
+
+            return RedirectToAction("Requests");
+        }
+
+        // ─────────────────────────────────────────────────────────────────
 
         // GET: /Admin/Delete/5
         public IActionResult Delete(int id)

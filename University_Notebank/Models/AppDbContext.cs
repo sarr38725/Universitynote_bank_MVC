@@ -10,5 +10,8 @@ namespace University_Notebank.Models
         public DbSet<Note> Notes { get; set; }
         public DbSet<Major> Majors { get; set; }
         public DbSet<Term> Terms { get; set; }
+        public DbSet<NoteAttachment> NoteAttachments { get; set; }
+        public DbSet<NoteRequest> NoteRequests { get; set; }
+        public DbSet<RequestMessage> RequestMessages { get; set; }
     }
 }
