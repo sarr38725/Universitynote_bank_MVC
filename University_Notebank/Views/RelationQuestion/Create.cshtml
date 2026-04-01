@@ -1,0 +1,183 @@
+@model University_Notebank.Models.RelationQuestion
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ask a Question – NoteBank</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg:#080f1a; --panel:#0f1d30; --panel2:#122038;
+            --gold:#c9a84c; --gold2:#e8c96a; --gold-dim:rgba(201,168,76,0.1);
+            --border:rgba(201,168,76,0.18); --border2:rgba(255,255,255,0.05);
+            --white:#ffffff; --muted:#6b7a99; --muted2:#8892a4;
+            --input-bg:#0b1828; --sidebar:#0b1525;
+        }
+        body { font-family:'Outfit',sans-serif; background:var(--bg); color:var(--white); display:flex; min-height:100vh; }
+        .sidebar { width:260px; background:var(--sidebar); border-right:1px solid var(--border2); display:flex; flex-direction:column; position:fixed; top:0; left:0; bottom:0; z-index:50; }
+        .sidebar-brand { padding:28px 24px 24px; border-bottom:1px solid var(--border2); display:flex; align-items:center; gap:12px; }
+        .brand-logo { width:40px; height:40px; background:var(--gold); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; }
+        .brand-name { font-family:'Cormorant Garamond',serif; font-size:1.15rem; font-weight:700; }
+        .brand-sub { font-size:0.7rem; color:var(--gold); letter-spacing:1.5px; text-transform:uppercase; }
+        .sidebar-nav { flex:1; padding:24px 16px; display:flex; flex-direction:column; gap:4px; }
+        .nav-label { font-size:0.65rem; color:var(--muted); letter-spacing:2px; text-transform:uppercase; padding:12px 8px 6px; font-weight:600; }
+        .nav-item { display:flex; align-items:center; gap:12px; padding:11px 14px; border-radius:10px; text-decoration:none; color:var(--muted2); font-size:0.88rem; transition:all 0.2s; position:relative; }
+        .nav-item:hover { background:rgba(255,255,255,0.04); color:var(--white); }
+        .nav-item.active { background:var(--gold-dim); color:var(--gold); border:1px solid var(--border); }
+        .nav-item.active::before { content:''; position:absolute; left:0; top:20%; bottom:20%; width:3px; background:var(--gold); border-radius:0 4px 4px 0; }
+        .sidebar-footer { padding:16px; border-top:1px solid var(--border2); }
+        .user-profile { display:flex; align-items:center; gap:10px; padding:12px; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid var(--border2); }
+        .user-avatar { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,var(--gold),var(--gold2)); display:flex; align-items:center; justify-content:center; font-size:16px; }
+        .user-name { font-size:0.82rem; font-weight:600; }
+        .user-role { font-size:0.7rem; color:var(--gold); }
+        .main { margin-left:260px; flex:1; display:flex; flex-direction:column; }
+        .topbar { height:68px; padding:0 36px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border2); background:rgba(8,15,26,0.8); backdrop-filter:blur(12px); position:sticky; top:0; z-index:40; }
+        .breadcrumb { display:flex; align-items:center; gap:8px; font-size:0.82rem; margin-bottom:3px; }
+        .breadcrumb a { color:var(--muted); text-decoration:none; }
+        .breadcrumb a:hover { color:var(--gold); }
+        .breadcrumb .current { color:var(--white); font-weight:500; }
+        .topbar-title { font-family:'Cormorant Garamond',serif; font-size:1.5rem; font-weight:700; }
+        .btn-back { padding:9px 20px; border:1px solid var(--border2); border-radius:9px; color:var(--muted2); font-size:0.85rem; text-decoration:none; transition:all 0.2s; }
+        .btn-back:hover { border-color:var(--border); color:var(--white); }
+        .content { padding:36px; flex:1; max-width:760px; }
+        .alert-success { background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.3); color:#4ade80; padding:14px 20px; border-radius:10px; margin-bottom:24px; font-size:0.88rem; }
+        .form-panel { background:var(--panel); border:1px solid var(--border2); border-radius:18px; overflow:hidden; animation:fadeUp 0.4s ease; }
+        .panel-head { padding:22px 28px; border-bottom:1px solid var(--border2); display:flex; align-items:center; gap:14px; }
+        .panel-head-icon { width:40px; height:40px; border-radius:10px; background:var(--gold-dim); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:18px; }
+        .panel-head-text h3 { font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-weight:600; }
+        .panel-head-text p { font-size:0.75rem; color:var(--muted); margin-top:2px; }
+        .panel-body { padding:28px; display:flex; flex-direction:column; gap:20px; }
+        .form-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+        label { display:block; font-size:0.78rem; font-weight:600; color:var(--muted2); margin-bottom:8px; letter-spacing:0.8px; text-transform:uppercase; }
+        label .req { color:var(--gold); }
+        input[type="text"], textarea, select { width:100%; padding:13px 16px; background:var(--input-bg); border:1.5px solid rgba(255,255,255,0.07); border-radius:10px; color:var(--white); font-family:'Outfit',sans-serif; font-size:0.92rem; font-weight:300; outline:none; transition:all 0.2s; appearance:none; }
+        input::placeholder, textarea::placeholder { color:var(--muted); }
+        input:focus, textarea:focus, select:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(201,168,76,0.1); background:#0d1f35; }
+        textarea { resize:vertical; min-height:130px; line-height:1.6; }
+        select { cursor:pointer; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238892a4' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 16px center; padding-right:40px; }
+        select option { background:var(--panel2); }
+        .submit-bar { display:flex; align-items:center; justify-content:space-between; padding:20px 28px; border-top:1px solid var(--border2); }
+        .submit-hint { font-size:0.78rem; color:var(--muted); }
+        .submit-hint span { color:var(--gold); }
+        .btn-submit { display:inline-flex; align-items:center; gap:10px; padding:13px 32px; background:var(--gold); color:var(--bg); border:none; border-radius:10px; font-family:'Outfit',sans-serif; font-size:0.92rem; font-weight:600; cursor:pointer; transition:all 0.2s; }
+        .btn-submit:hover { background:var(--gold2); transform:translateY(-1px); box-shadow:0 8px 24px rgba(201,168,76,0.3); }
+        @@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+        @@media(max-width:768px) { .sidebar{display:none} .main{margin-left:0} .content{padding:20px} .topbar{padding:0 20px} .form-row{grid-template-columns:1fr} }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-logo">📚</div>
+            <div><div class="brand-name">NoteBank</div><div class="brand-sub">Student Portal</div></div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-label">Browse</div>
+            <a href="/Notes" class="nav-item"><span>🏠</span> Notes</a>
+            <a href="/RelationQuestion" class="nav-item"><span>❓</span> Questions</a>
+            <div class="nav-label">My Account</div>
+            <a href="/Notes/Upload" class="nav-item"><span>⬆️</span> Upload Note</a>
+            <a href="/Notes/MyUploads" class="nav-item"><span>📋</span> My Uploads</a>
+            <a href="/NoteRequest/MyRequests" class="nav-item"><span>📨</span> My Requests</a>
+            <a href="/RelationQuestion/MyQuestions" class="nav-item"><span>🙋</span> My Questions</a>
+            <a href="/RelationQuestion/Create" class="nav-item active"><span>✏️</span> Ask Question</a>
+            <div class="nav-label">Account</div>
+            <a href="/Account/Profile" class="nav-item"><span>👤</span> Profile</a>
+            <a href="/Account/Logout" class="nav-item"><span>🚪</span> Logout</a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar">👤</div>
+                <div>
+                    <div class="user-name">@Context.Session.GetString("UserName")</div>
+                    <div class="user-role">@Context.Session.GetString("UserRole")</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <div class="main">
+        <div class="topbar">
+            <div>
+                <div class="breadcrumb">
+                    <a href="/RelationQuestion">Questions</a><span>›</span>
+                    <span class="current">Ask a Question</span>
+                </div>
+                <div class="topbar-title">Ask a Question</div>
+            </div>
+            <a href="/RelationQuestion" class="btn-back">← Back</a>
+        </div>
+
+        <div class="content">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert-success">✅ @TempData["Success"]</div>
+            }
+
+            <form method="post">
+                @Html.AntiForgeryToken()
+                <div class="form-panel">
+                    <div class="panel-head">
+                        <div class="panel-head-icon">❓</div>
+                        <div class="panel-head-text">
+                            <h3>Question Form</h3>
+                            <p>নোট বা বিষয় সম্পর্কিত যেকোনো প্রশ্ন করুন</p>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div>
+                            <label>Question Title <span class="req">*</span></label>
+                            <input type="text" name="Title" placeholder="e.g. What does the OSI model 3rd layer do?" required />
+                        </div>
+                        <div>
+                            <label>Details <span class="req">*</span></label>
+                            <textarea name="Body" placeholder="প্রশ্নটি বিস্তারিত বলুন। কী বুঝতে পারছেন না, কোন context-এ প্রশ্ন – সব লিখুন..." required></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div>
+                                <label>Related Major</label>
+                                <select name="MajorId">
+                                    <option value="">— Select Major —</option>
+                                    @foreach (var item in ViewBag.Majors as IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                </select>
+                            </div>
+                            <div>
+                                <label>Related Term</label>
+                                <select name="TermId">
+                                    <option value="">— Select Term —</option>
+                                    @foreach (var item in ViewBag.Terms as IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label>Related Note (Optional)</label>
+                            <select name="NoteId">
+                                <option value="">— Select a Note —</option>
+                                @foreach (var item in ViewBag.Notes as IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="submit-bar">
+                        <div class="submit-hint">Fields marked <span>*</span> are required</div>
+                        <button type="submit" class="btn-submit">Post Question →</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

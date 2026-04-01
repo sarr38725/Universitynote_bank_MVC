@@ -22,6 +22,87 @@ namespace University_Notebank.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("University_Notebank.Models.QuestionAnswer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsAccepted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("QuestionAnswers");
+                });
+
+            modelBuilder.Entity("University_Notebank.Models.RelationQuestion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("MajorId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("NoteId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("TermId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MajorId");
+
+                    b.HasIndex("NoteId");
+
+                    b.HasIndex("TermId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RelationQuestions");
+                });
+
             modelBuilder.Entity("University_Notebank.Models.Major", b =>
                 {
                     b.Property<int>("Id")
@@ -355,6 +436,54 @@ namespace University_Notebank.Migrations
                     b.Navigation("Sender");
                 });
 
+            modelBuilder.Entity("University_Notebank.Models.QuestionAnswer", b =>
+                {
+                    b.HasOne("University_Notebank.Models.RelationQuestion", "Question")
+                        .WithMany("Answers")
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("University_Notebank.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Question");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("University_Notebank.Models.RelationQuestion", b =>
+                {
+                    b.HasOne("University_Notebank.Models.Major", "Major")
+                        .WithMany()
+                        .HasForeignKey("MajorId");
+
+                    b.HasOne("University_Notebank.Models.Note", "Note")
+                        .WithMany()
+                        .HasForeignKey("NoteId");
+
+                    b.HasOne("University_Notebank.Models.Term", "Term")
+                        .WithMany()
+                        .HasForeignKey("TermId");
+
+                    b.HasOne("University_Notebank.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Major");
+
+                    b.Navigation("Note");
+
+                    b.Navigation("Term");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("University_Notebank.Models.Note", b =>
                 {
                     b.Navigation("Attachments");
@@ -363,6 +492,11 @@ namespace University_Notebank.Migrations
             modelBuilder.Entity("University_Notebank.Models.NoteRequest", b =>
                 {
                     b.Navigation("Messages");
+                });
+
+            modelBuilder.Entity("University_Notebank.Models.RelationQuestion", b =>
+                {
+                    b.Navigation("Answers");
                 });
 #pragma warning restore 612, 618
         }
